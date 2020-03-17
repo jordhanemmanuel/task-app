@@ -1,6 +1,7 @@
 const express = require('express')
 const router = new express.Router()
 const User = require('../models/user')
+const auth = require('../middleware/auth')
 const checkValidKeys = require('../others/checkValidKeys')
 
 /* ---------- Tratamento de Users ------------------------------------------------------------ */
@@ -38,44 +39,8 @@ router.post('/users/login', async (req, res) => {
     }
 })
 
-router.get('/users', async (req, res) => { 
-    try {
-        const users = await User.find({})
-        res.status(200).send(users)
-    }catch (e){
-        res.status(500).send(e)
-    }
- 
-    /*
-    if (req.query.id) {
-        User.findOne({ _id: mongoose.Types.ObjectId(req.query.id)}, (err, obj) => {
-            if (!err)
-                return res.status(200).send(obj)
-            notFound = true;
-        })
-    } else if (req.query.name) {
-        User.findOne({ name: new RegExp('^'+req.query.name+'$', "i")}, (err, obj) => {
-            console.log('Entrou no query name: ' + req.query.name)
-            console.log(obj)
-            console.log(err)
-            if (!err && obj)
-                return res.status(200).send(obj)
-            notFound = true;
-            console.log(notFound)
-        })
-    } else if (req.query.email) {
-        User.find({email: req.query.email}).then((doc) => {
-            res.send(doc)
-        }).catch((e) => {
-            res.status(500).send(e)
-        })
-        
-    } else {
-        return res.status(400).send({
-            error: 'Erro: Não foi informado parâmetros corretos para busca.', 
-            queryValue: req.query
-        })
-    }*/
+router.get('/users/me', auth, async (req, res) => { 
+    res.send(req.user)
 })
 
 router.get('/users/:id', async (req, res) => {
