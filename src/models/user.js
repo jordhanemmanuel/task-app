@@ -81,8 +81,8 @@ userSchema.methods.generateAuthToken = async function() {
 
 //sceham.pre permite que ele faça algo antes de um evento, enquanto schema.post após um evento acontecer
 userSchema.pre('save', async function (next) { //nesse caso especifico, arrow function nao funciona
-    const user = this
-    if (user.isModified('password')){
+    const user = this //o this carrega o schema carregado com os dados do usuario
+    if (user.isModified('password')){                               //variavel.pre(parametros), o this carrega o [variavel]
         user.password = await bcrypt.hash(user.password, 8)
     }
     next()//no caso dessa função (schema.pre), é necessario chamar o next pois se não ele fica rodando pra sempre

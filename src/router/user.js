@@ -17,15 +17,6 @@ router.post('/users', async (req, res) => {
     } catch (e) {
         res.status(400).send(e)
     }
-    
-    
-    // user.save().then(() => {
-    //     res.status(201).send(user)
-    //     //res.send(user) //também pode ser criado tudo em uma linha: res.status(201).send(user)
-    // }).catch((e) => {
-    //     res.status(400)
-    //     res.send(e.errors.password)
-    // })
 })
 
 //roteamento para o login
@@ -33,9 +24,32 @@ router.post('/users/login', async (req, res) => {
     try {
         const user = await User.findByCredentials(req.body.email, req.body.password)
         const token = await user.generateAuthToken()
-        res.send({user, token})
+        const success = 'O pai ta logado.'
+        res.send({success, user, token})
     } catch (e) {
         res.status(400).send(e)
+    }
+})
+
+router.post('/users/logout', auth, async (req, res) => {
+    try {
+        req.user.tokens = req.user.tokens.filter((token) => {
+            return token.token !== req.token
+        })
+        await req.user.save()
+        res.send('Deslogado da MORDOX.')
+    } catch (e) {
+        res.status(500).send()
+    }
+})
+
+router.post('/users/logoutAll', auth, async (req, res) => {
+    try {
+        req.user.tokens = []
+        await req.user.save()
+        res.status(200).send(req.user)
+    } catch (e) {
+        res.status(500).send()
     }
 })
 
