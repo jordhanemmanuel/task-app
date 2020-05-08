@@ -79,6 +79,16 @@ userSchema.methods.generateAuthToken = async function() {
     return token
 }
 
+userSchema.methods.toJSON = function () { //o método 'toJSON' modifica o JSON de um objeto
+    const user = this
+    const userObject = user.toObject()
+
+    delete userObject.password
+    delete userObject.tokens
+
+    return userObject
+}
+
 //sceham.pre permite que ele faça algo antes de um evento, enquanto schema.post após um evento acontecer
 userSchema.pre('save', async function (next) { //nesse caso especifico, arrow function nao funciona
     const user = this //o this carrega o schema carregado com os dados do usuario
@@ -88,7 +98,7 @@ userSchema.pre('save', async function (next) { //nesse caso especifico, arrow fu
     next()//no caso dessa função (schema.pre), é necessario chamar o next pois se não ele fica rodando pra sempre
 })
 
-const User = mongoose.model('User', userSchema) //pase o schema no lugar do body
+const User = mongoose.model('User', userSchema) //passe o schema no lugar do body
 
 
 //--------------------------------------------------------------------------//
